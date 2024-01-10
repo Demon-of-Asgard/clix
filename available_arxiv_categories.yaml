@@ -1,0 +1,18 @@
+astrophysics:
+  astro-ph.GA: Astrophysics_of_Galaxies
+  astro-ph.CO: Cosmology_and_Nongalactic_Astrophysics
+  astro-ph.EP: Earth_and_Planetary_Astrophysics
+  astro-ph.HE: High_Energy_Astrophysical_Phenomena
+  astro-ph.IM: Instrumentation_and_Methods_for_Astrophysics
+  astro-ph.SR: Solar_and_Stellar_Astrophysics
+
+condensed-matter:
+  cond-mat.dis-nn: Disordered_Systems_and_Neural_Networks
+  cond-mat.mtrl-sci: Materials_Science
+  cond-mat.mes-hall: Mesoscale_and_Nanoscale_Physics
+  cond-mat.other: Other_Condensed_Matter
+  cond-mat.quant-gas: Quantum_Gases
+  cond-mat.soft: Soft_Condensed_Matter
+  cond-mat.stat-mech: Statistical_Mechanics
+  cond-mat.str-el: Strongly_Correlated_Electrons
+  cond-mat.supr-con: Superconductivity
