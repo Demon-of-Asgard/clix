@@ -33,7 +33,7 @@ def manage_and_render_query_and_selection(category:str=..., identifier:str=..., 
     if not os.path.exists(qury_save_file):
         query = query_obj.construct_search_query(
             sort_method="submitted_date",
-            sort_order="descenting",
+            sort_order="descending",
             start_index=0,
             max_results=100,
         )
@@ -132,8 +132,6 @@ if __name__ == "__main__":
     for i in range(len(sys.argv)):
         if sys.argv[i] == "--prefix":
             prefix = sys.argv[i+1]
-        elif sys.argv[i] == "--pdf":
-            Paths.PDF = sys.argv[i+1]
         elif sys.argv[i] == "--db":
             Paths.DB = sys.argv[i+1]
         else:

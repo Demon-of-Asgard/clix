@@ -56,7 +56,7 @@ class ArXapi():
         
         # Adding sort information to the query
         if "sort_order" in keys:
-            if kwargs["sort_order"] == "decending":
+            if kwargs["sort_order"] == "descending":
                 self.query += "&sortOrder=descending"
             else:
                 self.query += "&sortOrder=ascending"
