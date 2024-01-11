@@ -1,3 +1,6 @@
-- [ ] Bug: Fix current_index taking values > len(list).
-- [ ] Add authors info above abstract.
+## TODO
+
+- [x] Bug: Fix current_index taking values > len(list).
+- [x] Add authors info above abstract.
 - [ ] Set refresh rate for query.
+- [x] Added date info along with the title

@@ -131,10 +131,23 @@ class ArXapi():
             current_chunk = self.parsed_response[current_chunk_start:current_chunk_start + chunk_size]
 
             for index, entry in enumerate(current_chunk):
+                title = (' '.join([element.strip() for element in entry['title'].split('\n')]) 
+                            + " [" +entry['updated'].split("T")[0] + "]"
+                )
                 if index == current_index:
-                    title = ' '.join([element.strip() for element in entry['title'].split('\n')])
+                    # Print title
                     print(f"[{index+current_chunk_start+1}] {get_shell_text(text = title, color='blue', style='bold')}")
+
                     if index == abs_index:
+                        # Print authors name.
+                        authlen = len(entry['authors']) if len(entry['authors']) <= 4 else 4
+                        auth_list_end = f", +{len(entry['authors'])-4}" if len(entry['authors']) > 4 else ""
+                        authors = ", ".join(auth['name'] for auth in entry['authors'][:authlen])
+                        print(
+                            get_shell_text(text=f"\t[{authors}{auth_list_end}]", color="green", style="italic")
+                        )
+
+                        #Print abstract
                         abstract_ = "\t\t" + "\n\t".join(entry['summary'].strip("<p>").strip("</p>").split("\n"))
                         abstract = get_shell_text(text=abstract_, color="grey", style="italic")
                         print(f"{abstract}", end = "\n")
@@ -142,7 +155,7 @@ class ArXapi():
                         print(f"\turl: {get_shell_text(text=url, color='blue', style='italic')}")
 
                 else:
-                    title = ' '.join([element.strip() for element in entry['title'].split('\n')])
+                    # title = ' '.join([element.strip() for element in entry['title'].split('\n')])
                     print(f"[{index+current_chunk_start+1}] {title}")
             
             if comment != None:
@@ -163,11 +176,12 @@ class ArXapi():
             elif key_pressed == getkey.keys.DOWN or key_pressed == "j":
                 # Increse current_index only if next index is in the chunk.
                 # else, move to the next chunk, set current_index to 0
-                if ((current_index + 1) < chunk_size): 
-                    current_index += 1 
-                else: 
-                    current_chunk_start += chunk_size
-                    current_index = 0
+                if not (current_chunk_start + current_index >= (len(self.parsed_response) - 1)):
+                    if ((current_index + 1) < chunk_size) and (current_chunk_start + current_index) < len(self.parsed_response): 
+                        current_index += 1 
+                    else: 
+                        current_chunk_start += chunk_size
+                        current_index = 0
 
             elif key_pressed == getkey.keys.UP or key_pressed == "k":
                 # Decrease the current index by 1 only if (current_index-1) is in current chunk.
