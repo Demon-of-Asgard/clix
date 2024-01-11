@@ -1,0 +1,3 @@
+- [ ] Bug: Fix current_index taking values > len(list).
+- [ ] Add authors info above abstract.
+- [ ] Set refresh rate for query.

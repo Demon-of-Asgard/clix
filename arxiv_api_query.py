@@ -56,7 +56,7 @@ class ArXapi():
         
         # Adding sort information to the query
         if "sort_order" in keys:
-            if kwargs["sort_order"] == "descending":
+            if kwargs["sort_order"] == "decending":
                 self.query += "&sortOrder=descending"
             else:
                 self.query += "&sortOrder=ascending"
@@ -84,6 +84,10 @@ class ArXapi():
         """
 
         # Handle query and response to the request.
+        print(
+            get_shell_text(text="Loading", color="green") 
+            + get_shell_text(text="...", color="green", style="blink")
+        )
         try:
             with urllib.request.urlopen(self.query, timeout=120) as response:
                 return response.status, response.read()
@@ -100,6 +104,8 @@ class ArXapi():
     
     
     def parse_response(self, response:str)->list:
+        '''Take response in xml format from query and parse using feed parser'''
+
         self.parsed_response = []
         feed = feedparser.parse(response)
         self.parsed_response = [entry for entry in feed.entries]
@@ -107,6 +113,9 @@ class ArXapi():
 
 
     def render_parsed_response(self):
+        '''Render listed items from (func)parse_response and render as chunks of enumerated list.
+        Also capture the key board inputs using geykey to navigate through list items.'''
+
         os.system("clear")
         comment = ""
         
@@ -117,59 +126,70 @@ class ArXapi():
 
         while True:
             clear()
-            print(get_shell_text(text= self.category.upper(), color="salmon", style="uline"))
+            print(get_shell_text(text= " ".join(self.category.split("_")).upper(), color="salmon", style="uline"))
 
             current_chunk = self.parsed_response[current_chunk_start:current_chunk_start + chunk_size]
 
             for index, entry in enumerate(current_chunk):
                 if index == current_index:
                     title = ' '.join([element.strip() for element in entry['title'].split('\n')])
-                    print(f"[{index+current_chunk_start+1}] {get_shell_text(text = title, color='grey', style='bg')}")
+                    print(f"[{index+current_chunk_start+1}] {get_shell_text(text = title, color='blue', style='bold')}")
                     if index == abs_index:
                         abstract_ = "\t\t" + "\n\t".join(entry['summary'].strip("<p>").strip("</p>").split("\n"))
-                        abstract = get_shell_text(text=abstract_, color="green", style="italic")
+                        abstract = get_shell_text(text=abstract_, color="grey", style="italic")
                         print(f"{abstract}", end = "\n")
-                        url = "https://" + "/".join(current_chunk[current_index]['link'].split("://")[1:])
-                        print(f"\turl: {get_shell_text(text=url, color='salmon', style='italic')}", end="\n")
+                        url = "https://" + "".join(current_chunk[current_index]['link'].split("://")[1:])
+                        print(f"\turl: {get_shell_text(text=url, color='blue', style='italic')}")
+
                 else:
                     title = ' '.join([element.strip() for element in entry['title'].split('\n')])
                     print(f"[{index+current_chunk_start+1}] {title}")
             
             if comment != None:
                 print(comment)
+            
+            #get the key press
             key_pressed = getkey.getkey(blocking=True)
             comment = None 
             abs_index = -1
             
             if (key_pressed == getkey.keys.ESC):
                 clear()
-                exit()
+                return
             elif (key_pressed == "q"):
                 clear()
-                return 
+                exit() 
 
             elif key_pressed == getkey.keys.DOWN or key_pressed == "j":
-                if ((current_index + 1) < chunk_size):
+                # Increse current_index only if next index is in the chunk.
+                # else, move to the next chunk, set current_index to 0
+                if ((current_index + 1) < chunk_size): 
                     current_index += 1 
                 else: 
                     current_chunk_start += chunk_size
                     current_index = 0
 
             elif key_pressed == getkey.keys.UP or key_pressed == "k":
-                if (current_chunk_start + current_index-1) >= current_chunk_start and (current_chunk_start + current_index - 1) >= 0:
+                # Decrease the current index by 1 only if (current_index-1) is in current chunk.
+                # Else move tio the previous chunk if exist and set current_index to the last index of previous chunk.
+                # Do nothing if there is no previous chunk to move to.
+                if (current_chunk_start + current_index-1) >= current_chunk_start and (current_chunk_start + current_index-1) >= 0:
                     current_index -= 1 
-                elif (current_chunk_start + current_index-1) < current_chunk_start:
+                elif (current_chunk_start + current_index-1) < current_chunk_start and (current_chunk_start + current_index-1) >= 0:
                     current_chunk_start -= chunk_size
                     current_index = chunk_size-1
                 elif (current_chunk_start + current_index-1) < 0:
                     pass 
             
             elif key_pressed == getkey.keys.RIGHT:
+                # Set abs_index to current_index to show abstract
                 abs_index = current_index
             elif key_pressed == getkey.keys.LEFT:
-                pass
+                # Close the abstract. This part is redundant.
+                abs_index = -1
 
             elif key_pressed == getkey.keys.ENTER:
+                # Enter to download and open the pdf 
                 print(current_chunk[0]['link'])
                 stat = self.open_file(link=current_chunk[current_index]['link'])
             
