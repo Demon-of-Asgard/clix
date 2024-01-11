@@ -69,7 +69,7 @@ def render_categories(category_info:dict, category_list:list, sub_category_list:
                     if id_current_subcat < 0:
                         id_current_subcat = len(current_sub_cats) -1 
                     if j == id_current_subcat:
-                        print(f"\t{get_shell_text(text=f'[{j}] {category_info[cat][sub_cat]}', color='blue')}")
+                        print(f"\t{get_shell_text(text=f'[{j}] {category_info[cat][sub_cat]}', color='green')}")
                     else:
                         print(f"\t[{j}] {category_info[cat][sub_cat]}")
             else:

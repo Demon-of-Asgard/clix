@@ -124,11 +124,13 @@ class ArXapi():
             for index, entry in enumerate(current_chunk):
                 if index == current_index:
                     title = ' '.join([element.strip() for element in entry['title'].split('\n')])
-                    print(f"[{index+current_chunk_start+1}] {get_shell_text(text = title, color='blue', style='bold')}")
+                    print(f"[{index+current_chunk_start+1}] {get_shell_text(text = title, color='grey', style='bg')}")
                     if index == abs_index:
-                        abstract_ = "\t\t" + "\n\t  ".join(entry['summary'].strip("<p>").strip("</p>").split("\n"))
-                        abstract = get_shell_text(text=abstract_, color="grey", style="italic")
-                        print(f"{abstract}", end = "\n\n")
+                        abstract_ = "\t\t" + "\n\t".join(entry['summary'].strip("<p>").strip("</p>").split("\n"))
+                        abstract = get_shell_text(text=abstract_, color="green", style="italic")
+                        print(f"{abstract}", end = "\n")
+                        url = "https://" + "/".join(current_chunk[current_index]['link'].split("://")[1:])
+                        print(f"\turl: {get_shell_text(text=url, color='salmon', style='italic')}", end="\n")
                 else:
                     title = ' '.join([element.strip() for element in entry['title'].split('\n')])
                     print(f"[{index+current_chunk_start+1}] {title}")
@@ -154,7 +156,7 @@ class ArXapi():
                     current_index = 0
 
             elif key_pressed == getkey.keys.UP or key_pressed == "k":
-                if (current_chunk_start + current_index-1) >= current_chunk_start and (current_chunk_start + current_index-1) >= 0:
+                if (current_chunk_start + current_index-1) >= current_chunk_start and (current_chunk_start + current_index - 1) >= 0:
                     current_index -= 1 
                 elif (current_chunk_start + current_index-1) < current_chunk_start:
                     current_chunk_start -= chunk_size
