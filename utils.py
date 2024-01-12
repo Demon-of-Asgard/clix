@@ -38,3 +38,8 @@ def get_shell_text(text: str, color: str = "default", style: str = "default") ->
 
     return f'\033[{shell_styles[style]};{shell_colors[color]}m{text}\033[0m'
 
+
+# def move_cursor_by(up:int=0, right:int=0):
+#     print("\033[%d;%dH" %(right, up))
+
+#     print(f"\r{'['}{'='*(l)}{'-'*(100-l)}{l}{'%]'}", end="")

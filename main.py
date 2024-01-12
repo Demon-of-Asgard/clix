@@ -49,72 +49,108 @@ def manage_and_render_query_and_selection(category:str=..., identifier:str=..., 
 
     return 
 
+def render_cat_and_subcat(
+        category_info:dict, category_list:list, sub_category_list:list,
+        id_current_cat:int=0, id_current_subcat:int=0, 
+        key_buffer:list=[], buffermode_on:bool=False
+    )->None:
 
-def render_categories(category_info:dict, category_list:list, sub_category_list:list)->tuple:
+    clear()
+    # Render categories and sub-categories
+    for i, cat in enumerate(category_list):
+        current_sub_cats = sub_category_list[i]
+        if i == id_current_cat:
+            print(f"[{i}] {get_shell_text(text=cat, color='grey', style='bg')}")
+            for j, sub_cat in enumerate(current_sub_cats):
+                if id_current_subcat >= len(current_sub_cats):
+                    id_current_subcat = 0
+                if id_current_subcat < 0:
+                    id_current_subcat = len(current_sub_cats) -1 
+                if j == id_current_subcat:
+                    print(f"\t{get_shell_text(text=f'[{j}] {category_info[cat][sub_cat]}', color='green')}")
+                else:
+                    print(f"\t[{j}] {category_info[cat][sub_cat]}")
+        else:
+            print(f"[{i}] {cat}")
+
+    if buffermode_on:
+        print(f"{''.join(key_buffer)}", end=' \b')
+        sys.stdout.flush()
+    
+    return None
+
+
+def manage_key_render_categories(category_info:dict, category_list:list, sub_category_list:list)->tuple:
     id_current_cat:int = 0
     id_current_subcat:int = 0
     comment:str = None
+    buffermode_on:bool = False
     key_buffer = []
-    while True:
-        clear()
 
-        # Render categories and sub-categories
-        for i, cat in enumerate(category_list):
-            current_sub_cats = sub_category_list[i]
-            if i == id_current_cat:
-                print(f"[{i}] {get_shell_text(text=cat, color='grey', style='bg')}")
-                for j, sub_cat in enumerate(current_sub_cats):
-                    if id_current_subcat >= len(current_sub_cats):
-                        id_current_subcat = 0
-                    if id_current_subcat < 0:
-                        id_current_subcat = len(current_sub_cats) -1 
-                    if j == id_current_subcat:
-                        print(f"\t{get_shell_text(text=f'[{j}] {category_info[cat][sub_cat]}', color='green')}")
-                    else:
-                        print(f"\t[{j}] {category_info[cat][sub_cat]}")
-            else:
-                print(f"[{i}] {cat}")
-           
-        # Capturing key press     
+    while True:
+        render_cat_and_subcat(
+            category_info=category_info,
+            category_list=category_list,
+            sub_category_list=sub_category_list, 
+            id_current_cat=id_current_cat,
+            id_current_subcat=id_current_subcat,
+            key_buffer=key_buffer,
+            buffermode_on=buffermode_on,
+        )
+
         keypressed = getkey.getkey(blocking=True) 
 
-        # Category navigation
-        if keypressed == "h" or keypressed == getkey.keys.LEFT:
-            id_current_cat -= 1
-            if id_current_cat < 0:
-                id_current_cat = len(category_list) - 1
-            id_current_subcat = 0
-        elif keypressed == "l" or keypressed == getkey.keys.RIGHT:
-            id_current_cat += 1
-            if id_current_cat >= len(category_list):
-                id_current_cat = 0
-            id_current_subcat = 0
-
-        elif keypressed == "j" or keypressed == getkey.keys.DOWN:
-            id_current_subcat += 1
-        elif keypressed == "k" or keypressed == getkey.keys.UP:
-            id_current_subcat -= 1
+        if keypressed == ":":
+            buffermode_on = True
         
-        # Category and sub-category selection
-        elif keypressed == getkey.keys.ENTER:
-            manage_and_render_query_and_selection(
-                category=category_info[category_list[id_current_cat]][sub_category_list[id_current_cat][id_current_subcat]], #category_list[id_current_cat],
-                identifier=sub_category_list[id_current_cat][id_current_subcat],
-                base_url=ArXurls.BASE_URL
-            )
-        
-        elif keypressed == Cmd.EXIT:
-            os.system("clear")
-            exit()
+        if not buffermode_on:
+            # Category navigation
+            if keypressed == "h" or keypressed == getkey.keys.LEFT:
+                id_current_cat -= 1
+                if id_current_cat < 0:
+                    id_current_cat = len(category_list) - 1
+                id_current_subcat = 0
+            elif keypressed == "l" or keypressed == getkey.keys.RIGHT:
+                id_current_cat += 1
+                if id_current_cat >= len(category_list):
+                    id_current_cat = 0
+                id_current_subcat = 0
 
-        elif keypressed == getkey.keys.ESC:
-            clear()
-            return 
+            elif keypressed == "j" or keypressed == getkey.keys.DOWN:
+                id_current_subcat += 1
+            elif keypressed == "k" or keypressed == getkey.keys.UP:
+                id_current_subcat -= 1
+        
+            # Category and sub-category selection
+            elif keypressed == getkey.keys.ENTER:
+                manage_and_render_query_and_selection(
+                    category=category_info[category_list[id_current_cat]][sub_category_list[id_current_cat][id_current_subcat]], #category_list[id_current_cat],
+                    identifier=sub_category_list[id_current_cat][id_current_subcat],
+                    base_url=ArXurls.BASE_URL
+                )
+
+            elif keypressed == getkey.keys.ESC and not buffermode_on:
+                clear()
+                return 
+            else:
+                print(keypressed, end="")
+                input()
+
         else:
-            print(keypressed, end="")
-            input()
-
-
+            if keypressed == Cmd.EXIT:
+                print()
+                exit()
+            elif keypressed == getkey.keys.ESC:
+                key_buffer = []
+                buffermode_on = False 
+                print("\n")
+            elif keypressed == getkey.keys.ENTER:
+                print (key_buffer)
+                buffermode_on = False
+                key_buffer = []
+            else:
+                key_buffer.append(keypressed)
+                    
 
 def main(prefix:str=..., pdf_path:str=..., db_path:str=...):
     category_info:dict = {}
@@ -122,13 +158,12 @@ def main(prefix:str=..., pdf_path:str=..., db_path:str=...):
         category_info = yaml.load(f, Loader=yaml.FullLoader)
     category_list = list(category_info.keys())
     sub_category_list = [list(category_info[cat].keys()) for cat in category_list] 
-    render_categories(category_info, category_list, sub_category_list)
+    manage_key_render_categories(category_info, category_list, sub_category_list)
 
 
 
 if __name__ == "__main__":
-    prefix="./"
-    pdfat = "./"
+    
     for i in range(len(sys.argv)):
         if sys.argv[i] == "--prefix":
             prefix = sys.argv[i+1]
