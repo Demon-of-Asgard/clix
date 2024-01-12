@@ -9,12 +9,13 @@ from utils import (Paths, Os, clear, get_shell_text)
 
 class ArXapi():
 
-    def __init__(self, category:str, identifier:str, base_url:str) -> None:
+    def __init__(self, category:str, identifier:str, base_url:str, reload:bool=False) -> None:
 
         self.category:str = category
         self.identifier:str = identifier
         self.base_url:str = base_url
         self.query:str = base_url
+        self.reload:bool = reload
         
     def __str__(self):
         return self.identifier 
@@ -84,10 +85,7 @@ class ArXapi():
         """
 
         # Handle query and response to the request.
-        print(
-            get_shell_text(text="Loading", color="green") 
-            + get_shell_text(text="...", color="green", style="blink")
-        )
+        
         try:
             with urllib.request.urlopen(self.query, timeout=120) as response:
                 return response.status, response.read()
@@ -203,8 +201,7 @@ class ArXapi():
                 abs_index = -1
 
             elif key_pressed == getkey.keys.ENTER:
-                # Enter to download and open the pdf 
-                print(current_chunk[0]['link'])
+                # Enter to download and open the pdf
                 stat = self.open_file(link=current_chunk[current_index]['link'])
             
             else:

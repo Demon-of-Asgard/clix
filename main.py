@@ -7,7 +7,7 @@ import datetime
 from arxiv_api_query import ArXapi
 from utils import (Cmd, Os, Paths, ArXurls, clear, get_shell_text)
 
-def manage_and_render_query_and_selection(category:str=..., identifier:str=..., base_url:str=...):
+def manage_and_render_query_and_selection(category:str=..., identifier:str=..., base_url:str=..., do_reload:bool=False):
 
     start_index=0
     max_results=100
@@ -16,6 +16,7 @@ def manage_and_render_query_and_selection(category:str=..., identifier:str=..., 
         category=category,
         identifier=identifier,
         base_url=base_url,
+        reload=do_reload,
     ) 
 
     today = datetime.datetime.now().date()
@@ -30,7 +31,18 @@ def manage_and_render_query_and_selection(category:str=..., identifier:str=..., 
 
     response = None
     qury_save_file = os.path.join(identifier_db_root, f"{today}_{start_index}_{start_index+max_results}.xml")
-    if not os.path.exists(qury_save_file):
+    if not os.path.exists(qury_save_file) or query_obj.reload:
+        if not query_obj.reload:
+            print(
+                get_shell_text(text="Loading", color="green") 
+                + get_shell_text(text="...", color="green", style="blink")
+            )
+        else:
+            print(
+                get_shell_text(text="Reloading", color="green") 
+                + get_shell_text(text="...", color="green", style="blink")
+            )
+
         query = query_obj.construct_search_query(
             sort_method="submitted_date",
             sort_order="descending",
@@ -80,7 +92,7 @@ def render_cat_and_subcat(
     return None
 
 
-def manage_key_render_categories(category_info:dict, category_list:list, sub_category_list:list)->tuple:
+def manage_key_render_categories(category_info:dict, category_list:list, sub_category_list:list, do_reload:bool=False)->tuple:
     id_current_cat:int = 0
     id_current_subcat:int = 0
     comment:str = None
@@ -126,15 +138,15 @@ def manage_key_render_categories(category_info:dict, category_list:list, sub_cat
                 manage_and_render_query_and_selection(
                     category=category_info[category_list[id_current_cat]][sub_category_list[id_current_cat][id_current_subcat]], #category_list[id_current_cat],
                     identifier=sub_category_list[id_current_cat][id_current_subcat],
-                    base_url=ArXurls.BASE_URL
+                    base_url=ArXurls.BASE_URL,
+                    do_reload=do_reload,
                 )
 
             elif keypressed == getkey.keys.ESC and not buffermode_on:
                 clear()
                 return 
             else:
-                print(keypressed, end="")
-                input()
+                pass
 
         else:
             if keypressed == Cmd.EXIT:
@@ -152,24 +164,24 @@ def manage_key_render_categories(category_info:dict, category_list:list, sub_cat
                 key_buffer.append(keypressed)
                     
 
-def main(prefix:str=..., pdf_path:str=..., db_path:str=...):
+def main(prefix:str=..., pdf_path:str=..., db_path:str=..., do_reload:bool=False):
     category_info:dict = {}
     with open(os.path.join(prefix, Paths.CATEGORIES_INFO), "r") as f:
         category_info = yaml.load(f, Loader=yaml.FullLoader)
     category_list = list(category_info.keys())
     sub_category_list = [list(category_info[cat].keys()) for cat in category_list] 
-    manage_key_render_categories(category_info, category_list, sub_category_list)
+    manage_key_render_categories(category_info, category_list, sub_category_list, do_reload=do_reload)
 
 
 
 if __name__ == "__main__":
-    
+    do_reload:bool = False
     for i in range(len(sys.argv)):
         if sys.argv[i] == "--prefix":
             prefix = sys.argv[i+1]
         elif sys.argv[i] == "--db":
             Paths.DB = sys.argv[i+1]
-        else:
-            pass
+        elif sys.argv[i] == "--r":
+            do_reload:bool = True
     
-    main(prefix=prefix, pdf_path=Paths.PDF, db_path=Paths.DB)
+    main(prefix=prefix, pdf_path=Paths.PDF, db_path=Paths.DB, do_reload=do_reload)
