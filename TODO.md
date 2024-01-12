@@ -3,6 +3,8 @@
 ---
 
 - [ ] Load id search from arxiv
+- [ ] **Add and remove categories and sub-categories**
+- [ ] **Add tagging and starring favorite entries**
 - [ ] **Connect to SQL database**
 
 ### DOING

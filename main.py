@@ -136,7 +136,7 @@ def manage_key_render_categories(category_info:dict, category_list:list, sub_cat
             # Category and sub-category selection
             elif keypressed == getkey.keys.ENTER:
                 manage_and_render_query_and_selection(
-                    category=category_info[category_list[id_current_cat]][sub_category_list[id_current_cat][id_current_subcat]], #category_list[id_current_cat],
+                    category=category_info[category_list[id_current_cat]][sub_category_list[id_current_cat][id_current_subcat]], 
                     identifier=sub_category_list[id_current_cat][id_current_subcat],
                     base_url=ArXurls.BASE_URL,
                     do_reload=do_reload,
@@ -157,11 +157,17 @@ def manage_key_render_categories(category_info:dict, category_list:list, sub_cat
                 buffermode_on = False 
                 print("\n")
             elif keypressed == getkey.keys.ENTER:
-                print (key_buffer)
                 buffermode_on = False
+                handle_buffer(buffer=key_buffer)
                 key_buffer = []
             else:
                 key_buffer.append(keypressed)
+
+    return None
+
+def handle_buffer(buffer:list=[])->None:
+    assert type(buffer) == type([]), f"Buffer is expected to be a list, {type(buffer)} passed to (func) handle_buffer."
+    input(buffer)
                     
 
 def main(prefix:str=..., pdf_path:str=..., db_path:str=..., do_reload:bool=False):

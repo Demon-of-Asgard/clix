@@ -213,7 +213,7 @@ class ArXapi():
 
     def open_file(self, link:str)->None:
 
-        pdf_folder = os.path.join(Paths.DB, self.identifier, Paths.PDF)
+        pdf_folder = os.path.join(Paths.DB, Paths.PDF)
         if not os.path.exists(pdf_folder):
             try:
                 os.makedirs(pdf_folder)
