@@ -11,7 +11,7 @@
 
 ---
 
-- [ ] Put all pdf file into a single folder
+- [ ] Refactoring the code base --> Moving to separate Classes --> on branch dev_ref
 
 ### DONE
 
@@ -27,3 +27,4 @@
 - [x] Set refresh for query with flag `-r`.
 - [x] Added date info along with the title
 - [x] Added buffermode capture with `:`
+- [x] Put all pdf file into a single folder
