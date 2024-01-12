@@ -2,9 +2,14 @@
 
 ---
 
+- [ ] Load id search from arxiv
+- [ ] **Connect to SQL database**
+
 ### DOING
 
 ---
+
+- [ ] Put all pdf file into a single folder
 
 ### DONE
 
