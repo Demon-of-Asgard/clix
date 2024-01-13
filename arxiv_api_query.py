@@ -119,7 +119,7 @@ class ArXapi():
         
         current_index = 0
         current_chunk_start = 0
-        chunk_size = 20
+        chunk_size = 25
         abs_index = -1
 
         while True:
@@ -210,8 +210,8 @@ class ArXapi():
             
         return 
     
-
-    def open_file(self, link:str)->None:
+    @staticmethod
+    def open_file(link:str)->None:
 
         pdf_folder = os.path.join(Paths.DB, Paths.PDF)
         if not os.path.exists(pdf_folder):

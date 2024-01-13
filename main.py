@@ -2,76 +2,55 @@ import os
 import sys
 import yaml
 import getkey
-import pprint 
+
 from arxiv_api_query import ArXapi
 from utils import (Cmd, Os, Paths, ArXurls, clear, get_shell_text)
 import renderer 
+import cmd_state
 import parse_kbd_cmd as kbd
 
 
 #------------------------------------------------------------------------------
 def manage_key_render_categories(category_info:dict, category_list:list, sub_category_list:list, do_reload:bool=False)->tuple:
-    id_current_cat:int = 0
-    id_current_subcat:int = 0
-    kbd_ENTER:bool = False
-    kbd_ESC:bool = False
-    comment:str = None
-    buffermode_on:bool = False
-    key_buffer:list = []
-
-    required_keys = [
-        "id_current_cat", "id_current_subcat",
-        "comment", "buffermode_on",
-        "key_buffer","kbd_ENTER", "kbd_ESC",
-    ]
+    
+    nav_state = cmd_state.CmdState(
+        id_item=0, id_subitem=0, 
+        kbd_ENTER=False, kbd_ESC=False, 
+        buffermode_on=False, key_buffer=[],
+        len_item=len(category_list), len_subitem=len(sub_category_list),
+        comment="",
+    )
+    
     while True:
         renderer.render_cat_and_subcat(
             category_info=category_info,
             category_list=category_list,
             sub_category_list=sub_category_list, 
-            id_current_cat=id_current_cat,
-            id_current_subcat=id_current_subcat,
-            key_buffer=key_buffer,
-            buffermode_on=buffermode_on,
-        )
-        current_cat_cmd_state = {
-            "id_current_cat": id_current_cat,
-            "id_current_subcat": id_current_subcat,
-            "kbd_ENTER": kbd_ENTER,
-            "kbd_ESC": kbd_ESC,
-            "comment": comment,
-            "buffermode_on": buffermode_on,
-            "key_buffer": key_buffer,
-            "category_list_len": len(category_list),
-        }
-
-        next_cat_cmd_state = kbd.catch_kbd(
-            MODE="CAT",
-            key_instructions = current_cat_cmd_state,
+            id_current_cat=nav_state.id_item,
+            id_current_subcat=nav_state.id_subitem,
+            key_buffer=nav_state.key_buffer,
+            buffermode_on=nav_state.buffermode_on,
         )
 
-        assert [key in next_cat_cmd_state.keys() for key in required_keys], f"""
-        Return from (func) parse_cmd with CAT mode reqirs all {required_keys}"""
-        
-        id_current_cat = next_cat_cmd_state["id_current_cat"]
-        id_current_subcat = next_cat_cmd_state["id_current_subcat"]
-        kbd_ENTER = next_cat_cmd_state["kbd_ENTER"]
-        kbd_ESC = next_cat_cmd_state["kbd_ESC"]
-        comment = next_cat_cmd_state["comment"]
-        buffermode_on = next_cat_cmd_state["buffermode_on"]
-        key_buffer = next_cat_cmd_state["key_buffer"]
+        nav_state = kbd.catch_cat_navigation(
+            current_nav_state = nav_state,
+        )
 
-        if kbd_ESC:
+        if nav_state.kbd_ESC:
             clear()
             return 
-        elif kbd_ENTER:
-            renderer.manage_and_render_query_and_selection(
-                category=category_info[category_list[id_current_cat]][sub_category_list[id_current_cat][id_current_subcat]], 
-                identifier=sub_category_list[id_current_cat][id_current_subcat],
+        elif nav_state.kbd_ENTER:
+            parsed_response = renderer.make_query_and_parse(
+                category=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]], 
+                identifier=sub_category_list[nav_state.id_item][nav_state.id_subitem],
                 base_url=ArXurls.BASE_URL,
                 do_reload=do_reload,
             )
-            kbd_ENTER = False
+            renderer.render_parsed_response(
+                parsed_response= parsed_response, 
+                display_title=sub_category_list[nav_state.id_item][nav_state.id_subitem]
+            )
+            nav_state.kbd_ENTER = False
                     
 
 #------------------------------------------------------------------------------
