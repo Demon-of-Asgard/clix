@@ -44,7 +44,8 @@ def render_cat_and_subcat(
 #------------------------------------------------------------------------------
 def manage_and_render_query_and_selection(
         category:str=..., identifier:str=..., 
-        base_url:str=..., do_reload:bool=False)->None:
+        base_url:str=..., do_reload:bool=False,
+    )->None:
 
     start_index=0
     max_results=100

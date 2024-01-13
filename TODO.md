@@ -11,6 +11,12 @@
 
 ---
 
+- [ ] The query seems to be returning all the submissions relared to sub-category, even cross referenced ones.
+      Try to order them in sub-categories.
+
+  - [ ] Show sub-category choice first.
+  - [ ] categorize and show the cross-referenced submissions later.
+
 - [ ] Refactoring the code base --> Moving to separate Classes --> on branch dev_ref
   - [ ] Create renderer.py to handle all the rendering.
     - [x] Moved render_cat_and_subcat from main.py

@@ -16,3 +16,18 @@ condensed-matter:
   cond-mat.stat-mech: Statistical_Mechanics
   cond-mat.str-el: Strongly_Correlated_Electrons
   cond-mat.supr-con: Superconductivity
+
+GR_and_Quantum_Cosmology:
+  gr-qc: General_Relativityand_Quantum_Cosmology
+
+HEPH-Pheno:
+  hep-ph: High_Energy_Physics-Phenomenology
+
+HEPH-Lattice:
+  hep-lat: High_Energy_Physics-Lattice
+
+HEPH-Experiment:
+  hep-ex: High_Energy_Physics-Experiment
+
+HEPH-Theory:
+  hep-th: High_Energy_Physics-Theory
