@@ -3,11 +3,12 @@ import sys
 import yaml
 import getkey
 
-from arxiv_api_query import ArXapi
-from utils import (Cmd, Os, Paths, ArXurls, clear, get_shell_text)
 import renderer 
 import cmd_state
 import parse_kbd_cmd as kbd
+import query_and_parse as qap 
+from arxiv_api_query import ArXapi
+from utils import (Cmd, Os, Paths, ArXurls, clear, get_shell_text)
 
 
 #------------------------------------------------------------------------------
@@ -46,7 +47,7 @@ def manage_key_render_categories(
             return 
         elif nav_state.kbd_ENTER:
             nav_state.kbd_ENTER = False
-            parsed_response = renderer.make_query_and_parse(
+            parsed_response = qap.make_query_and_parse(
                 category=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]], 
                 identifier=sub_category_list[nav_state.id_item][nav_state.id_subitem],
                 base_url=ArXurls.BASE_URL,
