@@ -11,13 +11,15 @@ import parse_kbd_cmd as kbd
 
 
 #------------------------------------------------------------------------------
-def manage_key_render_categories(category_info:dict, category_list:list, sub_category_list:list, do_reload:bool=False)->tuple:
+def manage_key_render_categories(
+        category_info:dict, category_list:list, 
+        sub_category_list:list, do_reload:bool=False)->tuple:
     
     nav_state = cmd_state.CmdState(
         id_item=0, id_subitem=0, 
         kbd_ENTER=False, kbd_ESC=False, 
         buffermode_on=False, key_buffer=[],
-        len_item=len(category_list), len_subitem=len(sub_category_list),
+        len_item=len(category_list), len_subitem=len(sub_category_list[0]),
         comment="",
     )
     
@@ -25,7 +27,7 @@ def manage_key_render_categories(category_info:dict, category_list:list, sub_cat
         renderer.render_cat_and_subcat(
             category_info=category_info,
             category_list=category_list,
-            sub_category_list=sub_category_list, 
+            sub_category_list=sub_category_list[nav_state.id_item], 
             id_current_cat=nav_state.id_item,
             id_current_subcat=nav_state.id_subitem,
             key_buffer=nav_state.key_buffer,
@@ -33,24 +35,55 @@ def manage_key_render_categories(category_info:dict, category_list:list, sub_cat
         )
 
         nav_state = kbd.catch_cat_navigation(
-            current_nav_state = nav_state,
+            nav_state=nav_state,
         )
-
-        if nav_state.kbd_ESC:
+        nav_state.len_subitem = len(sub_category_list[nav_state.id_item])
+        if nav_state.do_quit:
+            clear()
+            exit()
+        elif nav_state.kbd_ESC:
             clear()
             return 
         elif nav_state.kbd_ENTER:
+            nav_state.kbd_ENTER = False
             parsed_response = renderer.make_query_and_parse(
                 category=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]], 
                 identifier=sub_category_list[nav_state.id_item][nav_state.id_subitem],
                 base_url=ArXurls.BASE_URL,
                 do_reload=do_reload,
             )
-            renderer.render_parsed_response(
-                parsed_response= parsed_response, 
-                display_title=sub_category_list[nav_state.id_item][nav_state.id_subitem]
+            ############## PARSED RESPONSE ##############
+            navstate_parsed_response = cmd_state.CmdState(
+                id_item=0, id_subitem=-1,
+                id_item_start=0, id_subitem_start=-1,
+                kbd_ENTER=False, kbd_ESC=False,
+                buffermode_on=False, key_buffer=[], 
+                chunklen_item=25, chunklen_subitem=-1, 
+                len_item=len(parsed_response), len_subitem=-1,
+                comment="",
             )
-            nav_state.kbd_ENTER = False
+            while True:
+                renderer.render_parsed_response(
+                    parsed_response= parsed_response, 
+                    display_title=sub_category_list[nav_state.id_item][nav_state.id_subitem],
+                    navigation_state=navstate_parsed_response,
+                )
+
+                navstate_parsed_response = kbd.parse_titles_pane_navigation(
+                    current_nav_state=navstate_parsed_response
+                )
+                if navstate_parsed_response.do_quit == True:
+                    clear()
+                    exit()
+                elif navstate_parsed_response.kbd_ESC == True:
+                    break
+                elif navstate_parsed_response.kbd_ENTER == True:
+                    stat = ArXapi.open_file(
+                        link=parsed_response[navstate_parsed_response.id_item_start+navstate_parsed_response.id_item]['link']
+                    )
+                    navstate_parsed_response.kbd_ENTER = False
+                else:
+                    continue
                     
 
 #------------------------------------------------------------------------------
