@@ -62,6 +62,13 @@ def make_query_and_parse(
             response = f.read()
     
     parsed_response = query_obj.parse_response(response=response)
-    # query_obj.render_parsed_response()
+    primary = []
+    others= []
 
-    return parsed_response
+    for item in parsed_response:
+        if item['arxiv_primary_category']['term'] == query_obj.identifier:
+            primary.append(item)
+        else:
+            others.append(item)
+
+    return primary + others

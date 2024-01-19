@@ -45,3 +45,4 @@ _[12-01-2024]_
 - [x] Added date info along with the title
 - [x] Added buffermode capture with `:`
 - [x] Put all pdf file into a single folder
+- [x] Grouped display titles into primary categories and cross references

@@ -8,7 +8,9 @@ import cmd_state
 import parse_kbd_cmd as kbd
 import query_and_parse as qap 
 from arxiv_api_query import ArXapi
-from utils import (Cmd, Os, Paths, ArXurls, clear, get_shell_text)
+from utils import (
+    Cmd, Os, Paths, ArXurls, clear, get_shell_text
+)
 
 
 #------------------------------------------------------------------------------
@@ -53,6 +55,7 @@ def manage_key_render_categories(
                 base_url=ArXurls.BASE_URL,
                 do_reload=do_reload,
             )
+            
             ############## PARSED RESPONSE ##############
             navstate_parsed_response = cmd_state.CmdState(
                 id_item=0, id_subitem=-1,
@@ -66,7 +69,8 @@ def manage_key_render_categories(
             while True:
                 renderer.render_parsed_response(
                     parsed_response= parsed_response, 
-                    display_title=sub_category_list[nav_state.id_item][nav_state.id_subitem],
+                    display_title=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]],
+                    identifier=sub_category_list[nav_state.id_item][nav_state.id_subitem],
                     navigation_state=navstate_parsed_response,
                 )
 
