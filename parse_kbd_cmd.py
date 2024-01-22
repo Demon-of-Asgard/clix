@@ -7,14 +7,6 @@ from utils import (Cmd, clear, get_shell_text)
 
 def catch_cat_navigation(nav_state:Type[cmd_state.CmdState]=...)->Type[cmd_state.CmdState]:
 
-    # nav_state = cmd_state.CmdState(
-    #     id_item=current_nav_state.id_item, id_subitem=current_nav_state.id_subitem,
-    #     kbd_ENTER=current_nav_state.kbd_ENTER, kbd_ESC=current_nav_state.kbd_ESC,
-    #     buffermode_on=current_nav_state.buffermode_on, key_buffer=current_nav_state.key_buffer,
-    #     len_item=current_nav_state.len_item, len_subitem=current_nav_state.len_subitem,
-    #     comment=current_nav_state.comment,
-    # )
-
     keypressed = getkey.getkey(blocking=True) 
     # if keypressed == ":":
     #     buffermode_on = True
@@ -82,7 +74,8 @@ def parse_titles_pane_navigation(
         )->Type[cmd_state.CmdState]:
     #get the key press
     key_pressed = getkey.getkey(blocking=True)
-    
+    current_nav_state.id_subitem =-1
+
     if (key_pressed == getkey.keys.ESC):
         current_nav_state.kbd_ESC=True
     elif (key_pressed == "q"):
@@ -113,14 +106,17 @@ def parse_titles_pane_navigation(
     elif key_pressed == getkey.keys.RIGHT:
         # Set abs_index to current_nav_state.id_item to show abstract
         current_nav_state.id_subitem = current_nav_state.id_item
+        # input (current_nav_state.id_subitem)
     elif key_pressed == getkey.keys.LEFT:
-        # Close the abstract. This part is redundant.
+        # Set not to show abstract
         current_nav_state.id_subitem = -1
 
     elif key_pressed == getkey.keys.ENTER:
         # Enter to download and open the pdf
         current_nav_state.kbd_ENTER=True
+        # Set not to show abstract
     else:
         current_nav_state.comment = get_shell_text(text="ERR: ", color="red", style="bold") + f"Unexpected Input <{key_pressed}>"
+        # Set not to show abstract
 
     return current_nav_state
