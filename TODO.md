@@ -16,6 +16,8 @@
 
 ---
 
+_[22-01-2024]_
+
 - [x] Refactoring the code base --> Moving to separate Classes --> on branch dev_ref
   - [x] Create renderer.py to handle all the rendering.
     - [x] Moved render_cat_and_subcat from main.py
