@@ -66,20 +66,20 @@ def render_parsed_response(
         if index == navigation_state.id_item:
             # Print title
             print(f"[{index+navigation_state.id_item_start+1}] {get_shell_text(text = title, color='green', style='uline')}")
+            authlen = len(entry['authors']) if len(entry['authors']) <= 4 else 4
+            auth_list_end = f", +{len(entry['authors'])-4}" if len(entry['authors']) > 4 else ""
+            authors = ", ".join(auth['name'] for auth in entry['authors'][:authlen])
+            auth_list = get_shell_text(text=f"[{authors}{auth_list_end}]", color="yellow", style="italic")
+            # primary_cat = get_shell_text(text=f"[{entry['arxiv_primary_category']['term']}]", color='purple', style="bold")
+            print(f"\t{auth_list}")
 
             if index == navigation_state.id_subitem:
                 # Print authors name.
-                authlen = len(entry['authors']) if len(entry['authors']) <= 4 else 4
-                auth_list_end = f", +{len(entry['authors'])-4}" if len(entry['authors']) > 4 else ""
-                authors = ", ".join(auth['name'] for auth in entry['authors'][:authlen])
-                primary_cat = get_shell_text(text=f"[{entry['arxiv_primary_category']['term']}]", color='purple', style="bold")
-                auth_list = get_shell_text(text=f"[{authors}{auth_list_end}]", color="yellow", style="italic")
                 url = "https://" + "".join(current_chunk[navigation_state.id_item]['link'].split("://")[1:])
-                print(f"\t{auth_list} {primary_cat}")
                 print(f"\t{get_shell_text(text='URL: ', color='red', style='bold')}{get_shell_text(text=url, color='blue', style='italic')}")
 
                 #Print abstract
-                abstract_ = "\t\t" + "\n\t".join(entry['summary'].strip("<p>").strip("</p>").split("\n"))
+                abstract_ = "\t" + "\n\t".join(entry['summary'].strip("<p>").strip("</p>").split("\n"))
                 abstract = get_shell_text(text=abstract_, color="grey", style="italic")
                 print(f"{abstract}", end = "\n")
 
