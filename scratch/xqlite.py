@@ -1,4 +1,5 @@
 import sqlite3 as sql
+import feedparser as xmlparser
 from typing import List, Dict, Tuple
 
 
@@ -31,7 +32,7 @@ def add_items(connection, table_name:str=None, field_names:List | Tuple=..., ite
 
 
 #---------------------------------------------------------------------------
-def main():
+def sql():
     with sql.connect("xdb.db") as connection:
         schema = {
             "Id" : ("INTEGER", ),
@@ -40,8 +41,18 @@ def main():
         }
         table_name = "preXs"
         create_table(connection=connection, table_name=table_name, schema=schema)
-        items = [2, "The Great Gatsb", "F. Scott Fitzgerald"]
+        items = [1, "The Great Gatsby", "F. Scott Fitzgerald"]
         add_items(connection=connection, table_name=table_name, field_names=("id", "Title", "Author"), items=items)
+
+def main()->None:
+    with open("test.xml", "r") as f:
+        data = f.read()
+    
+    parsed_data = xmlparser.parse(data)
+    print(parsed_data["items"][0]["title"])
+    print(parsed_data["items"][0]["summary"])
+
+    return
 
 #---------------------------------------------------------------------------
 if __name__ == "__main__":
