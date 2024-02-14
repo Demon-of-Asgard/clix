@@ -21,13 +21,41 @@ class Os:
 class Paths:
     PDF = "pdf"
     DB  = "db"
+    DB_NAME = "arxive_db"
     CATEGORIES_INFO = "available_arxiv_categories.yaml"
 
+class Fields:
+    fields = [
+        ("astro-ph.GA" , 1),
+        ("astro-ph.CO" , 2), 
+        ("astro-ph.EP" , 3), 
+        ("astro-ph.HE" , 4), 
+        ("astro-ph.IM" , 5), 
+        ("astro-ph.SR" , 6), 
+        ("cond-mat.dis-nn" , 7), 
+        ("cond-mat.mtrl-sci" , 8), 
+        ("cond-mat.mes-hall" , 9),
+        ("cond-mat.other" , 10), 
+        ("cond-mat.quant-gas",  11),
+        ("cond-mat.soft" , 12),
+        ("cond-mat.stat-mech", 13),
+        ("cond-mat.str-el" , 14),
+        ("cond-mat.supr-con" , 15),
+        ("gr-qc", 16),
+        ("hep-ph", 17),
+        ("hep-lat" , 18), 
+        ("hep-ex" , 19), 
+        ("hep-th" , 20),
+    ]
+
+    
 def clear()-> None:
     os.system("clear")
     return None
 
-def get_shell_text(text: str, color: str = "default", style: str = "default") -> str:
+
+
+def get_shell_text(text: str="",  color: str = "default", style: str = "default") -> str:
     """Create colorful custom shell texts. """
     if Os.TYPE != 'Darwin':
         shell_styles = {"default": 0, "bold": 1, "faded": 2,
@@ -49,3 +77,4 @@ def get_shell_text(text: str, color: str = "default", style: str = "default") ->
 #     print("\033[%d;%dH" %(right, up))
 
 #     print(f"\r{'['}{'='*(l)}{'-'*(100-l)}{l}{'%]'}", end="")
+

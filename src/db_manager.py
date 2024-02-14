@@ -1,7 +1,9 @@
-import sqlite3 as sql
-import feedparser as xmlparser
+import os
+import sqlite3 as sqlt
+from datetime import datetime
 from typing import List, Dict, Tuple
 
+from utils import Paths, Fields
 
 #---------------------------------------------------------------------------
 def create_table(connection, table_name:str=..., schema:Dict=...)->None:
@@ -12,10 +14,8 @@ def create_table(connection, table_name:str=..., schema:Dict=...)->None:
     if "info" in schema.keys():
         qstr += schema["info"]
     qstr = qstr[:-1].strip(",") + " )"
-    print(qstr)
-    connection.execute(qstr)
-    return
-
+    stat = connection.execute(qstr)
+    return 
 
 #---------------------------------------------------------------------------
 def add_items(connection, table_name:str=None, field_names:List | Tuple | str=..., items:List=None)->None:
@@ -40,6 +40,7 @@ def add_items(connection, table_name:str=None, field_names:List | Tuple | str=..
     return 
 
 #---------------------------------------------------------------------------
+
 def add_item(connection, table_name:str=None, field_names:List | Tuple | str=..., items:List=None)->None:
     items = items if not items == None else []
     assert type(field_names) is list or type(field_names) is tuple or type(field_names) is str, f"""Field names can only be list or tuple. Currently passed 
@@ -62,35 +63,21 @@ def add_item(connection, table_name:str=None, field_names:List | Tuple | str=...
     return 
 
 #---------------------------------------------------------------------------
-def add_relational_data(connection, table:str, relation:str, data:List | Tuple | str)->None:
-
-    return
-
-#---------------------------------------------------------------------------
-def sql_entry():
-    with sql.connect("xdb.db") as connection:
-        schema = {
-            "Id" : ("INTEGER", ),
-            "Title" : ("TEXT", "PRIMARY KEY"),
-            "Author" : ("TEXT", )
+def add_to_db(parsed_data:List|Dict, category:str, identifier:str):
+    with sqlt.connect (os.path.join(Paths.DB, f"{identifier}.db")) as connection:
+        fields_schema = {
+            "id" : ("INTEGER", "PRIMARY KEY"),
+            "identifier":("TEXT", ),
         }
-        table_name = "preXs"
-        create_table(connection=connection, table_name=table_name, schema=schema)
-        items = [1, "The Great Gatsby", "F. Scott Fitzgerald"]
-        add_items(connection=connection, table_name=table_name, field_names=("id", "Title", "Author"), items=items)
 
-def main()->None:
-    with open("test.xml", "r") as f:
-        data = f.read()
-    
-    with sql.connect("arxiv.db") as connection:
-
-        entries_schema = {
+        articles_schema = {
             "article_id" : ("INTEGER", "PRIMARY KEY"),
             "ver" : ("INTEGER", "NOT NULL"),
+            "date" : ("DATETIME", ),
+            "primary_category" : ("TEXT",),
             "title" : ("TEXT", "NOT NULL"),
             "summary" : ("TEXT", "NOT NULL"),
-            "link" : ("TEXT", "NOT NULL")
+            "link" : ("TEXT", "NOT NULL"),
         }
 
         author_shema = {
@@ -100,28 +87,28 @@ def main()->None:
         relation_shema = {
             "author_name" : ("TEXT",),
             "article_id" : ("INTEGER",),
-            "info" : "FOREIGN KEY (author_name) REFERENCES authors (name), FOREIGN KEY(article_id) REFERENCES articles(ROWID) "
+            "info" : ("FOREIGN KEY (author_name) REFERENCES authors (name),"+ 
+                      "FOREIGN KEY(article_id) REFERENCES articles(ROWID) ")
         }
-       
-        create_table(connection=connection, table_name="articles" , schema=entries_schema)
+
+
+        create_table(connection=connection, table_name="fields" , schema=fields_schema)
+        create_table(connection=connection, table_name="articles" , schema=articles_schema)
         create_table(connection=connection, table_name="authors", schema=author_shema)
-        create_table(connection=connection, table_name="araurel", schema=relation_shema)
+        create_table(connection=connection, table_name="relate_author_article", schema=relation_shema)
 
-
-
-        parsed_data = xmlparser.parse(data)
-        for entry in parsed_data["entries"][:]:
+        for entry in parsed_data[:]:
             title = " ".join(entry['title'].split("\n"))
             summary = entry["summary"]
-            xid = entry["link"].split('/')[-1].split('v')[0].split(".")
-            article_id = int(xid[0] + xid[1])
+            xid = "".join(entry["link"].split('/')[-1].split('v')[0].split("."))
+            article_id = int(xid)
             version = int(entry['link'].split('/')[-1].split('v')[1]) if len(entry["link"].split('/')[-1].split('v')) > 1 else None
-            meta_link = f"http://arxiv.org/abs/{xid}{version}"
-            pdf_link = f"http://arxiv.org/pdf/{xid}{version}"
+            date = datetime.strptime(entry["updated"].split("T")[0], '%Y-%m-%d').date()
             link = entry["link"]
             article_meta = (
                     article_id,
                     version, 
+                    date,
                     title, 
                     summary,
                     link, 
@@ -130,7 +117,7 @@ def main()->None:
             add_item(
                 connection=connection,
                 table_name="articles",
-                field_names=("article_id", "ver", "title", "summary", "link"),
+                field_names=("article_id", "ver", "date", "title", "summary", "link"),
                 items=article_meta
             )
             add_items(
@@ -139,20 +126,15 @@ def main()->None:
                 field_names="name", 
                 items=authors
             )
-            print("done")
             for author in authors:
                 author = "".join(author[0].split("'"))
-                qstring = f"""INSERT INTO araurel (author_name, article_id) SELECT '{author}', {article_id} WHERE NOT EXISTS (SELECT 1 FROM araurel WHERE article_id = {article_id} AND author_name = '{author}')"""
-                print(qstring)
+                qstring = (
+                    f"INSERT INTO relate_author_article (author_name, article_id) SELECT '{author}', {article_id} " + 
+                    f"WHERE NOT EXISTS " + 
+                    f"(SELECT 1 FROM relate_author_article WHERE article_id = {article_id} AND author_name = '{author}')"
+                )
                 connection.execute(
                     qstring
                 )
 
     return
-
-#---------------------------------------------------------------------------
-if __name__ == "__main__":
-    main()
-
-#---------------------------------------------------------------------------
-    

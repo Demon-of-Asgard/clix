@@ -11,6 +11,7 @@ from arxiv_api_query import ArXapi
 from utils import (
     Cmd, Os, Paths, ArXurls, clear, get_shell_text
 )
+import db_manager as db_manager
 
 
 #------------------------------------------------------------------------------
@@ -49,12 +50,16 @@ def manage_key_render_categories(
             return 
         elif nav_state.kbd_ENTER:
             nav_state.kbd_ENTER = False
+            category = category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]]
+            identifier=sub_category_list[nav_state.id_item][nav_state.id_subitem]
             parsed_response = qap.make_query_and_parse(
-                category=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]], 
-                identifier=sub_category_list[nav_state.id_item][nav_state.id_subitem],
+                category=category, 
+                identifier=identifier,
                 base_url=ArXurls.BASE_URL,
                 do_reload=do_reload,
             )
+            
+            db_manager.add_to_db(parsed_data=parsed_response, category=category, identifier=identifier)
             
             ############## PARSED RESPONSE ##############
             navstate_parsed_response = cmd_state.CmdState(
