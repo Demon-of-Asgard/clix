@@ -1,0 +1,6 @@
+PyYAML>=6.0
+getkey>=0.6.0
+db-sqlite3>=0.0.1
+feedparser>=6.0.0
+pytest-shutil>=1.7.0
+requests>=2.32.0
