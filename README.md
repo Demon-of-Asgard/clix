@@ -5,7 +5,9 @@
 Sometimes I find browsers very distracting. So I wrote some simple scipts in `python` and named it `clix` (CLI-arXiv). `clix` uses arXiv API to perform the the queries and `sqlite3` to store metadata. `clix` allow one to bowse arxiv entried on terminal and read articles and open pdf file on the default pdf reader. Feel free to use, modify and distribute according to the MIT lisence.
 
 ## Install 
-1. Clone the repository 
+The necessary source files will be copied to `~/.local/clix/src` and a folder to store database and pdf files at `~/.local/clix/db`. Also, a bash script named `clix` is crated with execute permission and copied to `/usr/local/bin/`.
+### Steps
+1. Clone the repository
 ```shell
 git clone git@github.com:Demon-of-Asgard/clix.git
 ```
