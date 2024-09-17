@@ -114,7 +114,7 @@ if __name__ == "__main__":
             prefix = sys.argv[i+1]
         elif sys.argv[i] == "--db":
             Paths.DB = sys.argv[i+1]
-        elif sys.argv[i] == "--r":
+        elif sys.argv[i] == "-r" or sys.argv[i] == "--reload":
             do_reload:bool = True
     
     main(prefix=prefix, pdf_path=Paths.PDF, db_path=Paths.DB, do_reload=do_reload)
