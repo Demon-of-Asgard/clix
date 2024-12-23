@@ -5,7 +5,7 @@ import cmd_state
 from utils import (Cmd, clear, get_shell_text)
 
 
-def catch_cat_navigation(nav_state:Type[cmd_state.CmdState]=...)->Type[cmd_state.CmdState]:
+def catch_cat_navigation(nav_state:cmd_state.CmdState)->cmd_state.CmdState:
 
     keypressed = getkey.getkey(blocking=True) 
     # if keypressed == ":":
@@ -70,8 +70,8 @@ def handle_buffer(buffer:list=[])->None:
 
 #------------------------------------------------------------------------------
 def parse_titles_pane_navigation(
-        current_nav_state:Type[cmd_state.CmdState]=...
-        )->Type[cmd_state.CmdState]:
+        current_nav_state:cmd_state.CmdState
+        )->cmd_state.CmdState:
     #get the key press
     key_pressed = getkey.getkey(blocking=True)
     current_nav_state.id_subitem =-1

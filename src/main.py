@@ -1,8 +1,11 @@
+
+# ----Packages
 import os 
 import sys
 import yaml
-import getkey
+import time
 
+#---- Custome
 import renderer 
 import cmd_state
 import parse_kbd_cmd as kbd
@@ -13,13 +16,16 @@ from utils import (
 )
 import db_manager as db_manager
 
+# ---- Global
+resting_time:float = 1.0e-3
+term_w, term_h = os.get_terminal_size()
 
 #------------------------------------------------------------------------------
 def manage_key_render_categories(
         category_info:dict, category_list:list, 
         sub_category_list:list, do_reload:bool=False)->tuple:
     
-    nav_state = cmd_state.CmdState(
+    nav_state:cmd_state.CmdState = cmd_state.CmdState(
         id_item=0, id_subitem=0, 
         kbd_ENTER=False, kbd_ESC=False, 
         buffermode_on=False, key_buffer=[],
@@ -28,6 +34,9 @@ def manage_key_render_categories(
     )
     
     while True:
+        time.sleep(resting_time)
+        current_term_w, current_term_h = os.get_terminal_size()
+
         renderer.render_cat_and_subcat(
             category_info=category_info,
             category_list=category_list,
@@ -47,7 +56,8 @@ def manage_key_render_categories(
             exit()
         elif nav_state.kbd_ESC:
             clear()
-            return 
+            return (None, None)
+        
         elif nav_state.kbd_ENTER:
             nav_state.kbd_ENTER = False
             category = category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]]
@@ -72,6 +82,7 @@ def manage_key_render_categories(
                 comment="",
             )
             while True:
+                time.sleep(resting_time)
                 renderer.render_parsed_response(
                     parsed_response= parsed_response, 
                     display_title=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]],
@@ -97,7 +108,7 @@ def manage_key_render_categories(
                     
 
 #------------------------------------------------------------------------------
-def main(prefix:str=..., pdf_path:str=..., db_path:str=..., do_reload:bool=False):
+def main(prefix:str="", pdf_path:str="", db_path:str="", do_reload:bool=False):
     category_info:dict = {}
     with open(os.path.join(prefix, Paths.CATEGORIES_INFO), "r") as f:
         category_info = yaml.load(f, Loader=yaml.FullLoader)
@@ -115,7 +126,7 @@ if __name__ == "__main__":
         elif sys.argv[i] == "--db":
             Paths.DB = sys.argv[i+1]
         elif sys.argv[i] == "-r" or sys.argv[i] == "--reload":
-            do_reload:bool = True
+            do_reload = True
     
     main(prefix=prefix, pdf_path=Paths.PDF, db_path=Paths.DB, do_reload=do_reload)
 

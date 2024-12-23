@@ -46,7 +46,7 @@ def render_cat_and_subcat(
 #------------------------------------------------------------------------------
 def render_parsed_response(
         parsed_response:list=[], display_title:str="", identifier:str="",
-        navigation_state:Type[cmd_state.CmdState]=None)->None:
+        navigation_state:cmd_state.CmdState=cmd_state.CmdState())->None:
     '''Render listed items from (func)parse_response and render as chunks of enumerated list.
     Also capture the key board inputs using geykey to navigate through list items.'''
 
