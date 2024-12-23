@@ -6,6 +6,7 @@ from typing import List, Dict, Tuple
 from utils import Paths, Fields
 
 #---------------------------------------------------------------------------
+
 def create_table(connection, table_name:str=..., schema:Dict=...)->None:
     qstr = f"CREATE TABLE IF NOT EXISTS {table_name} ("
     for key, values in schema.items():
@@ -18,6 +19,7 @@ def create_table(connection, table_name:str=..., schema:Dict=...)->None:
     return 
 
 #---------------------------------------------------------------------------
+
 def add_items(connection, table_name:str=None, field_names:List | Tuple | str=..., items:List=None)->None:
     items = items if not items == None else []
     assert type(field_names) is list or type(field_names) is tuple or type(field_names) is str, f"""Field names can only be list or tuple. Currently passed 
@@ -63,6 +65,7 @@ def add_item(connection, table_name:str=None, field_names:List | Tuple | str=...
     return 
 
 #---------------------------------------------------------------------------
+
 def add_to_db(parsed_data:List|Dict, category:str, identifier:str):
     with sqlt.connect (os.path.join(Paths.DB, f"{identifier}.db")) as connection:
         fields_schema = {
@@ -138,3 +141,5 @@ def add_to_db(parsed_data:List|Dict, category:str, identifier:str):
                 )
 
     return
+
+#------------------------------------------------------------------------------

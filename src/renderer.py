@@ -1,5 +1,6 @@
 import os
 import sys
+import time 
 import getkey
 import datetime
 from typing import Type
@@ -46,10 +47,9 @@ def render_cat_and_subcat(
 #------------------------------------------------------------------------------
 def render_parsed_response(
         parsed_response:list=[], display_title:str="", identifier:str="",
-        navigation_state:cmd_state.CmdState=cmd_state.CmdState())->None:
+        navigation_state:cmd_state.CmdState=cmd_state.CmdState(), resting_time:float=1.0e-3)->None:
     '''Render listed items from (func)parse_response and render as chunks of enumerated list.
     Also capture the key board inputs using geykey to navigate through list items.'''
-
     clear()
     print(get_shell_text(text= " ".join(display_title.split("_")).upper(), color="red", style="uline"))
     checked_cross_ref:bool = False

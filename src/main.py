@@ -21,6 +21,7 @@ resting_time:float = 1.0e-3
 term_w, term_h = os.get_terminal_size()
 
 #------------------------------------------------------------------------------
+
 def manage_key_render_categories(
         category_info:dict, category_list:list, 
         sub_category_list:list, do_reload:bool=False)->tuple:
@@ -77,12 +78,15 @@ def manage_key_render_categories(
                 id_item_start=0, id_subitem_start=-1,
                 kbd_ENTER=False, kbd_ESC=False,
                 buffermode_on=False, key_buffer=[], 
-                chunklen_item=25, chunklen_subitem=-1, 
+                chunklen_item=100, chunklen_subitem=-1, 
                 len_item=len(parsed_response), len_subitem=-1,
                 comment="",
             )
             while True:
                 time.sleep(resting_time)
+                term_w, term_h = os.get_terminal_size()
+                navstate_parsed_response.chunklen_item = term_h - term_h // 3
+                
                 renderer.render_parsed_response(
                     parsed_response= parsed_response, 
                     display_title=category_info[category_list[nav_state.id_item]][sub_category_list[nav_state.id_item][nav_state.id_subitem]],
@@ -108,6 +112,7 @@ def manage_key_render_categories(
                     
 
 #------------------------------------------------------------------------------
+
 def main(prefix:str="", pdf_path:str="", db_path:str="", do_reload:bool=False):
     category_info:dict = {}
     with open(os.path.join(prefix, Paths.CATEGORIES_INFO), "r") as f:
@@ -118,6 +123,7 @@ def main(prefix:str="", pdf_path:str="", db_path:str="", do_reload:bool=False):
 
 
 #------------------------------------------------------------------------------
+
 if __name__ == "__main__":
     do_reload:bool = False
     for i in range(len(sys.argv)):

@@ -1,9 +1,11 @@
+import os
 import getkey
 from typing import Type
 
 import cmd_state 
 from utils import (Cmd, clear, get_shell_text)
 
+#------------------------------------------------------------------------------
 
 def catch_cat_navigation(nav_state:cmd_state.CmdState)->cmd_state.CmdState:
 
@@ -63,12 +65,13 @@ def catch_cat_navigation(nav_state:cmd_state.CmdState)->cmd_state.CmdState:
 
 
 #------------------------------------------------------------------------------
+
 def handle_buffer(buffer:list=[])->None:
     assert type(buffer) == type([]), f"Buffer is expected to be a list, {type(buffer)} passed to (func) handle_buffer."
     input(buffer)
 
-
 #------------------------------------------------------------------------------
+
 def parse_titles_pane_navigation(
         current_nav_state:cmd_state.CmdState
         )->cmd_state.CmdState:
@@ -88,7 +91,7 @@ def parse_titles_pane_navigation(
             if ((current_nav_state.id_item + 1) < current_nav_state.chunklen_item) and (current_nav_state.id_item_start + current_nav_state.id_item) < current_nav_state.len_item: 
                 current_nav_state.id_item += 1 
             else: 
-                current_nav_state.id_item_start += current_nav_state.chunklen_item
+                current_nav_state.id_item_start += current_nav_state.chunklen_item 
                 current_nav_state.id_item = 0
 
     elif key_pressed == getkey.keys.UP or key_pressed == "k":
@@ -120,3 +123,6 @@ def parse_titles_pane_navigation(
         # Set not to show abstract
 
     return current_nav_state
+
+#------------------------------------------------------------------------------
+
